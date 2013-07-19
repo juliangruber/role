@@ -1,7 +1,11 @@
 
 # role
 
-Develop services as single processes, deploy them as multiple.
+Develop services as single processes, deploy them as multiple - from a single
+code base.
+
+Each service is a `role` and exports a stream, as every good networker does.
+Then cluster / distributed roles as you wish.
 
 ## Usage
 
