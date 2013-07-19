@@ -25,9 +25,10 @@ var qs = require('querystring');
 // we define the `db` role
 role.set('db', function () {
   var db = level(__dirname + '/db');
+  // this function will be called everytime `db` is requested
   return function () {
     return multilevel.server(db);
-  }
+  };
 });
 
 // we define the `main` role
@@ -83,11 +84,11 @@ To start as three seperate processes (mind synchronisation):
 $ HUB=7888 ROLE=main node example/simple.js 
 $ CLIENT=7888 ROLE=db node example/simple.js 
 $ CLIENT=7888 ROLE=db node example/simple.js 
-$ # Now you can just kill and recreate one database at a time and the site will stay up.
+$ # Now you can just and recreate one database at a time and the site will stay up.
 ```
 
-When using distributed/production mode you just have to make sure that there's
-always have at least one hub running.
+When using distributed / production mode you just have to make sure that
+there's always at least one hub running.
 
 ## API
 
