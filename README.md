@@ -5,8 +5,8 @@ Develop services as single processes, deploy them as multiple.
 
 ## Usage
 
-Let's write a webserver that stores and receives data from a leveldb, and
-operates on querystrings. Since we want to be able to split up the http
+Let's write a webserver that stores and receives data from a leveldb,
+operating on querystrings. Since we want to be able to split up the http
 server and the leveldb later, we give each a role:
 
 ```js
