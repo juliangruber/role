@@ -1,6 +1,6 @@
 {
   "name": "role",
-  "description": "Develop services as single processes and deploy them as multiple.",
+  "description": "Develop services as single processes, deploy them as multiple.",
   "version": "0.0.0",
   "repository": {
     "type": "git",

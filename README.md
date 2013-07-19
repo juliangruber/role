@@ -1,7 +1,7 @@
 
 # role
 
-Develop services as single processes and deploy them as multiple.
+Develop services as single processes, deploy them as multiple.
 
 ## Usage
 
