@@ -77,8 +77,7 @@ To start as three seperate processes (mind synchronisation):
 $ HUB=7888 ROLE=main node example/simple.js 
 $ CLIENT=7888 ROLE=db node example/simple.js 
 $ CLIENT=7888 ROLE=db node example/simple.js 
-$ # Now you can just kill and recreate one database at a time and the site
-will stay up.
+$ # Now you can just kill and recreate one database at a time and the site will stay up.
 ```
 
 When using distributed/production mode you just have to make sure that there's
