@@ -1,0 +1,31 @@
+{
+  "name": "role",
+  "description": "Develop services as single processes and deploy them as multiple.",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/juliangruber/role.git"
+  },
+  "homepage": "https://github.com/juliangruber/role",
+  "main": "index.js",
+  "dependencies": {
+    "mux-demux": "~3.7.6",
+    "debug": "~0.7.2",
+    "tmp-stream": "~0.1.0",
+    "reconnect": "~1.5.0",
+    "deck": "0.0.4"
+  },
+  "devDependencies": {
+    "multilevel": "~5.2.0",
+    "level-test": "~1.4.0"
+  },
+  "keywords": [
+    "deployment", "development", "spread", "distributed"
+  ],
+  "author": {
+    "name": "Julian Gruber",
+    "email": "mail@juliangruber.com",
+    "url": "http://juliangruber.com"
+  },
+  "license": "MIT"
+}
