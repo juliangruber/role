@@ -7,6 +7,8 @@ code base.
 Each service is a `role` and exports a stream, as every good networker does.
 Then cluster / distributed roles as you wish.
 
+Network partitions / reconnects are handled transparently.
+
 ## Usage
 
 Let's write a webserver that stores and receives data from a leveldb,
