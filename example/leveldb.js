@@ -1,18 +1,17 @@
+var role = require('..');
 var level = require('level-test')({ mem: true });
 var multilevel = require('multilevel');
 var http = require('http');
 var qs = require('querystring');
 
-var role = require('..');
-
-role.set('db', function () {
+role('db', function () {
   var db = level();
   return function () {
     return multilevel.server(db);
   }
 });
 
-role.set('main', function () {
+role('main', function () {
   var db = multilevel.client();
   role.get('db', function (s) {
     s.pipe(db.createRpcStream()).pipe(s);
