@@ -43,7 +43,26 @@ process.nextTick(function () {
  * Expose `role`.
  */
 
-var role = module.exports = {};
+module.exports = role;
+
+/**
+ * Define role.
+ *
+ * @param {String} name
+ * @param {Function} fn
+ */
+
+function role (name, fn) {
+  if (!process.env.ROLE) active.push(name);
+  debug('set: %s', name);
+  roles[name] = fn;
+
+  if (name == 'main' && execLocally('main')) {
+    start('main');
+  }
+};
+
+role.set = role; // don't break api
 
 /**
  * Get role.
@@ -72,22 +91,6 @@ role.get = function (name, fn) {
   }
 };
 
-/**
- * Set role.
- *
- * @param {String} role
- * @param {Function} fn
- */
-
-role.set = function (name, fn) {
-  if (!process.env.ROLE) active.push(name);
-  debug('set: %s', name);
-  roles[name] = fn;
-
-  if (name == 'main' && execLocally('main')) {
-    start('main');
-  }
-};
 
 /**
  * Start role.

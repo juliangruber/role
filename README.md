@@ -19,13 +19,13 @@ frontend, we use a role for each:
 var role = require('role');
 var through = require('through');
 
-role.set('uppercaser', function () {
+role('uppercaser', function () {
   return through(function (chunk) {
     this.queue(chunk.toString().toUpperCase());
   });
 });
 
-role.set('main', function () {
+role('main', function () {
   role.get('uppercaser', function (upper) {
     process.stdin
       .pipe(through(function (c) { this.queue(c.toString()) }))
@@ -70,15 +70,15 @@ there's always at least one hub running.
 
 ## API
 
+### role(name, fn)
+
+Set `fn` to be role `name`. `fn` should return a **Stream** or a **Function**
+that returns a Stream.
+
 ### role.get(name, fn)
 
 Call `fn` with a stream for role `name`. When the connection is lost and a new
 one is made or already available, call `fn` again.
-
-### role.set(name, fn)
-
-Set `fn` to be role `name`. `fn` should return a **Stream** or a **Function**
-that returns a Stream.
 
 ## Env flags
 
