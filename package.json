@@ -17,10 +17,14 @@
   },
   "devDependencies": {
     "multilevel": "~5.2.0",
-    "level-test": "~1.4.0"
+    "level-test": "~1.4.0",
+    "through": "~2.3.4"
   },
   "keywords": [
-    "deployment", "development", "spread", "distributed"
+    "deployment",
+    "development",
+    "spread",
+    "distributed"
   ],
   "author": {
     "name": "Julian Gruber",

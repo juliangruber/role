@@ -11,52 +11,26 @@ Network partitions / reconnects are handled transparently.
 
 ## Usage
 
-Let's write a webserver that stores and receives data from a leveldb,
-operating on querystrings. Since we want to be able to split up the http
-server and the leveldb later, we give each a role:
+Let's write a CLI app that uppercases `stdin`. Because in production we'll want
+to use multiple processes and especially split up uppercasing from the
+frontend, we use a role for each:
 
 ```js
 var role = require('role');
-var level = require('level');
-var multilevel = require('multilevel');
-var http = require('http');
-var qs = require('querystring');
+var through = require('through');
 
-// we define the `db` role
-role.set('db', function () {
-  var db = level(__dirname + '/db');
-  // this function will be called everytime `db` is requested
-  return function () {
-    return multilevel.server(db);
-  };
+role.set('uppercaser', function () {
+  return through(function (chunk) {
+    this.queue(chunk.toString().toUpperCase());
+  });
 });
 
-// we define the `main` role
 role.set('main', function () {
-  var db = multilevel.client();
-
-  // we request the `db` role
-  role.get('db', function (s) {
-    s.pipe(db.createRpcStream()).pipe(s);
-  });
-
-  http.createServer(function (req, res) {
-    var query = qs.parse(req.url.split('?').slice(1).join(''));
-    if (query.get) {
-      db.get(query.get, function (err, val) {
-        if (err) res.end('not found');
-        else res.end(val);
-      });
-    } else if (query.put) {
-      db.put(query.put, query.value, function (err) {
-        if (err) res.end(String(err));
-        else res.end('ok');
-      });
-    } else {
-      res.end('try\n\n/?put=foo&value=bar\n\n/?get=foo');
-    }
-  }).listen(8000, function () {
-    console.log('~> localhost:8000');
+  role.get('uppercaser', function (upper) {
+    process.stdin
+      .pipe(through(function (c) { this.queue(c.toString()) }))
+      .pipe(upper)
+      .pipe(process.stdout);
   });
 });
 ```
@@ -67,27 +41,31 @@ other rules will be executed when requested via `role.get()`.*
 Now, to start as a single process:
 
 ```bash
-$ node example/simple.js
-$ open http://localhost:8000/
+$ node example/uppercaser.js
+hi
+HI
+what's up
+WHAT'S UP
 ```
 
-To start as two seperate processes:
+To start as two seperate processes, one being the uppercaser (read: doing
+something cpu intensive), the other being being the frontend:
 
 ```bash
-$ HUB=7888 ROLE=main node example/simple.js 
-$ CLIENT=7888 ROLE=db node example/simple.js 
+$ HUB=7888 ROLE=main node example/uppercaser.js 
+$ CLIENT=7888 ROLE=uppercaser node example/uppercaser.js 
 ```
 
-To start as three seperate processes (mind synchronisation):
+To start as three seperate processes:
 
 ```bash
-$ HUB=7888 ROLE=main node example/simple.js 
-$ CLIENT=7888 ROLE=db node example/simple.js 
-$ CLIENT=7888 ROLE=db node example/simple.js 
-$ # Now you can just and recreate one database at a time and the site will stay up.
+$ HUB=7888 ROLE=main node example/uppercaser.js 
+$ CLIENT=7888 ROLE=uppercaser node example/uppercaser.js 
+$ CLIENT=7888 ROLE=uppercaser node example/uppercaser.js 
+$ # you can kill any client without causing downtime
 ```
 
-When using distributed / production mode you just have to make sure that
+When using distributed / production mode just make sure that
 there's always at least one hub running.
 
 ## API
