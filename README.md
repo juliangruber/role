@@ -89,6 +89,12 @@ distributed/production mode.
 * `CLIENT`: Be a client and listen on that port.
 * `ROLE`: The role to serve. Multiple roles are activated when you pass a comma-seperated list, like `main,db`.
 
+## Debugging
+
+Pass `DEBUG=*` or `DEBUG=role` to see what's going on:
+
+![debug](http://i.cloudup.com/Ar8aXJj6ia.png)
+
 ## Installation
 
 With [npm](http://npmjs.org) do
