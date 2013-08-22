@@ -7,7 +7,7 @@ var EventEmitter = require('events').EventEmitter;
 var MuxDemux = require('mux-demux');
 var debug = require('debug')('role');
 var tmpStream = require('tmp-stream');
-var reconnect = require('reconnect');
+var reconnect = require('reconnect-net');
 var pick = require('deck').pick;
 
 /**
@@ -94,15 +94,15 @@ role.subscribe = function (name, fn) {
   var stream;
   if (rolesAvailable[name]) {
     stream = start(name);
+    stream.once('end', role.subscribe.bind(null, name, fn));
     fn(stream);
-    stream.once('end', role.get.bind(null, name, fn));
-  }
-
-  ee.on(name, onConnection);
-  function onConnection () {
-    if (!stream || stream.destroyed) {
-      ee.removeListener(name, onConnection);
-      role.get(name, fn);
+  } else {
+    ee.on(name, onConnection);
+    function onConnection () {
+      if (!stream || stream.destroyed) {
+        ee.removeListener(name, onConnection);
+        role.subscribe(name, fn);
+      }
     }
   }
 };
