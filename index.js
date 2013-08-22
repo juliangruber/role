@@ -66,18 +66,31 @@ function role (name, fn) {
  * Get role.
  *
  * @param {String} name
- * @param {Function} fn
+ * @param {Function=} fn
  */
 
 role.get = function (name, fn) {
   debug('get: %s', name);
 
-  if (execLocally(name) || rolesAvailable[name])
-    fn(start(name));
-  else
-    ee.once(name, function() {
-      role.get(name, fn);
-    });
+  if (!fn) {
+    if (execLocally(name) || rolesAvailable[name]) {
+      return start(name);
+    } else {
+      var tmp = tmpStream();
+      ee.once(name, function() {
+        tmp.replace(role.get(name));
+      });
+      return tmp;
+    }
+  } else {
+    if (execLocally(name) || rolesAvailable[name]) {
+      fn(start(name));
+    } else {
+      ee.once(name, function() {
+        role.get(name, fn);
+      });
+    }
+  }
 };
 
 /**
