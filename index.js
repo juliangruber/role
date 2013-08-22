@@ -71,6 +71,24 @@ function role (name, fn) {
 
 role.get = function (name, fn) {
   debug('get: %s', name);
+
+  if (execLocally(name) || rolesAvailable[name])
+    fn(start(name));
+  else
+    ee.once(name, function() {
+      role.get(name, fn);
+    });
+};
+
+/**
+ * Subscribe role.
+ *
+ * @param {String} name
+ * @param {Function} fn
+ */
+
+role.subscribe = function (name, fn) {
+  debug('get: %s', name);
   if (execLocally(name)) return fn(start(name));
 
   var stream;
@@ -88,7 +106,6 @@ role.get = function (name, fn) {
     }
   }
 };
-
 
 /**
  * Start role.
