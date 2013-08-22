@@ -9,11 +9,11 @@
   "homepage": "https://github.com/juliangruber/role",
   "main": "index.js",
   "dependencies": {
-    "mux-demux": "~3.7.6",
+    "mux-demux": "~3.7.8",
     "debug": "~0.7.2",
-    "tmp-stream": "~0.1.0",
-    "reconnect": "~1.5.0",
-    "deck": "0.0.4"
+    "tmp-stream": "~0.2.3",
+    "deck": "0.0.4",
+    "reconnect-net": "0.0.0"
   },
   "devDependencies": {
     "multilevel": "~5.2.0",
