@@ -1,7 +1,7 @@
 {
   "name": "role",
   "description": "Develop services as single processes, deploy them as multiple.",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "repository": {
     "type": "git",
     "url": "git://github.com/juliangruber/role.git"
