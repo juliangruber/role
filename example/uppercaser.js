@@ -8,7 +8,7 @@ role('uppercaser', function () {
 });
 
 role('main', function () {
-  role.get('uppercaser', function (upper) {
+  role.subscribe('uppercaser', function (upper) {
     process.stdin
       .pipe(through(function (c) { this.queue(c.toString()) }))
       .pipe(upper)
