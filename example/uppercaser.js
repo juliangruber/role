@@ -9,8 +9,8 @@ role('uppercaser', function () {
 
 role('main', function () {
   role.subscribe('uppercaser', function (upper) {
+    process.stdin.setEncoding('utf8');
     process.stdin
-      .pipe(through(function (c) { this.queue(c.toString()) }))
       .pipe(upper)
       .pipe(process.stdout);
   });
