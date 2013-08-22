@@ -9,7 +9,7 @@ Then cluster / distributed roles as you wish.
 
 Network partitions / reconnects are handled transparently.
 
-## Usage
+## Example: Subscribe to role
 
 Let's write a CLI app that uppercases `stdin`. Because in production we'll want
 to use multiple processes and especially split up uppercasing from the
@@ -68,6 +68,28 @@ $ # you can kill any client without causing downtime
 When using distributed / production mode just make sure that
 there's always at least one hub running.
 
+## Example: Get role
+
+When you only need a stream once, `role.get(name)` returns a stream that you can use immediately and buffers if necessary:
+
+```js
+var role = require('..');
+var through = require('through');
+
+role('uppercaser', function () {
+  return through(function (chunk) {
+    this.queue(chunk.toString().toUpperCase());
+  });
+});
+
+role('main', function () {
+  process.stdin.setEncoding('utf8');
+  process.stdin
+    .pipe(role.get('uppercaser'))
+    .pipe(process.stdout);
+});
+```
+
 ## API
 
 ### role(name, fn)
@@ -75,9 +97,9 @@ there's always at least one hub running.
 Set `fn` to be role `name`. `fn` should return a **Stream** or a **Function**
 that returns a Stream.
 
-### role.get(name, fn)
+### role.get(name)
 
-Call `fn` with a stream for role `name`.
+Return a Stream that can be used immediately and if necessary buffers until the connection is made.
 
 ### role.subscribe(name, fn)
 
