@@ -62,8 +62,6 @@ function role (name, fn) {
   }
 };
 
-role.set = role; // don't break api
-
 /**
  * Get role.
  *
