@@ -26,7 +26,7 @@ role('uppercaser', function () {
 });
 
 role('main', function () {
-  role.get('uppercaser', function (upper) {
+  role.subscribe('uppercaser', function (upper) {
     process.stdin
       .pipe(through(function (c) { this.queue(c.toString()) }))
       .pipe(upper)
@@ -77,6 +77,10 @@ that returns a Stream.
 
 ### role.get(name, fn)
 
+Call `fn` with a stream for role `name`.
+
+### role.subscribe(name, fn)
+
 Call `fn` with a stream for role `name`. When the connection is lost and a new
 one is made or already available, call `fn` again.
 
@@ -91,7 +95,7 @@ distributed/production mode.
 
 ## Debugging
 
-Pass `DEBUG=*` or `DEBUG=role` to see what's going on:
+Pass `DEBUG=role` to see what's going on:
 
 ![debug](http://i.cloudup.com/Ar8aXJj6ia.png)
 
