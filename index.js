@@ -141,7 +141,8 @@ function start (name) {
     }
   } else {
     debug('connect: %s', name);
-    return pick(rolesAvailable[name]).createStream(name);
+    return pick(rolesAvailable[name])
+      .createStream(name, { allowHalfOpen: true });
   }
 }
 
