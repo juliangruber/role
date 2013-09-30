@@ -8,7 +8,6 @@ var MuxDemux = require('mux-demux');
 var debug = require('debug')('role');
 var tmpStream = require('tmp-stream');
 var reconnect = require('reconnect-net');
-var pick = require('deck').pick;
 
 /**
  * Module state.
@@ -228,3 +227,15 @@ function handleConnection (con) {
 function execLocally (role) {
   return !active.length || active.indexOf(role) > -1;
 }
+
+/**
+ * Pick a random element from `arr`.
+ *
+ * @param {Array} arr
+ * @return {Object}
+ */
+
+function pick(arr) {
+  return arr[Math.floor(Math.random() * arr.length)]
+}
+
