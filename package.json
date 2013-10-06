@@ -12,7 +12,9 @@
     "mux-demux": "~3.7.8",
     "debug": "~0.7.2",
     "tmp-stream": "~0.2.3",
-    "reconnect-net": "0.0.0"
+    "reconnect-net": "0.0.0",
+    "node-uuid": "~1.4.1",
+    "crdt": "~3.5.4"
   },
   "devDependencies": {
     "multilevel": "~5.2.0",
