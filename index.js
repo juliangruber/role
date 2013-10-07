@@ -3,30 +3,27 @@
  */
 
 var net = require('net');
-var EventEmitter = require('events').EventEmitter;
-var MuxDemux = require('mux-demux');
 var debug = require('debug')('role');
-var tmpStream = require('tmp-stream');
+var seaport = require('seaport');
 var reconnect = require('reconnect-net');
+var host = 'localhost';
 
 /**
  * Module state.
  */
 
 var roles = {};
-var rolesAvailable = {};
-var ee = new EventEmitter;
-var mdm;
 var active = process.env.ROLE
   ? process.env.ROLE.split(',')
   : [];
+var ports = seaport.createServer();
 
 /**
  * Start client or hub.
  */
 
-if (process.env.HUB) process.nextTick(hub);
-if (process.env.CLIENT) process.nextTick(client);
+if (process.env.LISTEN) process.nextTick(listen);
+if (process.env.CONNECT) process.nextTick(connect);
 
 /**
  * Validation.
@@ -56,67 +53,23 @@ function role (name, fn) {
   debug('set: %s', name);
   roles[name] = fn;
 
-  if (name == 'main' && execLocally('main')) {
-    start('main');
-  }
+  if (execLocally(name)) start(name);
 };
 
 /**
  * Get role.
  *
  * @param {String} name
- * @param {Function=} fn
+ * @param {Function} fn
  */
 
 role.get = function (name, fn) {
   debug('get: %s', name);
 
-  if (!fn) {
-    if (execLocally(name) || rolesAvailable[name]) {
-      return start(name);
-    } else {
-      var tmp = tmpStream();
-      ee.once(name, function() {
-        tmp.replace(role.get(name));
-      });
-      return tmp;
-    }
-  } else {
-    if (execLocally(name) || rolesAvailable[name]) {
-      fn(start(name));
-    } else {
-      ee.once(name, function() {
-        role.get(name, fn);
-      });
-    }
-  }
-};
-
-/**
- * Subscribe role.
- *
- * @param {String} name
- * @param {Function} fn
- */
-
-role.subscribe = function (name, fn) {
-  debug('get: %s', name);
-  if (execLocally(name)) return fn(start(name));
-
-  var stream;
-  if (rolesAvailable[name]) {
-    stream = start(name);
-    stream.once('end', role.subscribe.bind(null, name, fn));
-    fn(stream);
-  } else {
-    ee.on(name, onConnection);
-    function onConnection () {
-      if (!stream || stream.destroyed) {
-        ee.removeListener(name, onConnection);
-        role.subscribe(name, fn);
-      }
-    }
-  }
+  ports.get(name, function(processes) {
+    var ps = pick(processes);
+    fn(net.connect(ps.port, ps.host));
+  });
 };
 
 /**
@@ -127,94 +80,44 @@ role.subscribe = function (name, fn) {
  */
 
 function start (name) {
-  if (execLocally(name)) {
-    debug('start: %s', name);
-    var ret = roles[name]();
-
-    // some roles return functions that return streams
-    if (typeof ret == 'function') {
-      roles[name] = ret;
-      return ret();
-    } else {
-      return ret; 
-    }
+  if (name == 'main') {
+    roles[name]();
   } else {
-    debug('connect: %s', name);
-    return pick(rolesAvailable[name])
-      .createStream(name, { allowHalfOpen: true });
+    net.createServer(function(con) {
+      con.pipe(roles[name]()).pipe(con);
+    }).listen(ports.register({ role: name, host: host }));
   }
 }
 
 /**
- * Be a hub.
+ * Listen on a port.
  */
 
-function hub () {
-  var port = Number(process.env.HUB);
+function listen () {
+  //ports.listen(Number(process.env.LISTEN));
+  var port = Number(process.env.LISTEN);
+
   net.createServer(function (con) {
-    debug('hub: new connection');
-    handleConnection(con);
+    debug('new connection');
+    con.pipe(ports.createStream(host)).pipe(con);
   }).listen(port, function () {
-    debug('hub: listening on port %s', port);
+    debug('listening on port %s', port);
   });
 }
 
 /**
- * Be a client.
+ * Connect to ports.
  */
 
-function client () {
-  var port = Number(process.env.CLIENT);
-  reconnect(function (con) {
-    debug('client connected to port %s', port);
-    handleConnection(con);
-  }).listen(port);
-}
+function connect () {
+  var _ports = process.env.CONNECT.split(',').map(Number);
 
-/**
- * Handle hub/client connection.
- *
- * @param {Stream} con
- */
-
-function handleConnection (con) {
-  var _roles;
-  var mdm = MuxDemux();
-  mdm.createWriteStream('me').write(JSON.stringify(active));
-  mdm.on('connection', function (stream) {
-    if (stream.meta == 'me') {
-      stream.on('data', function (data) {
-        try { _roles = JSON.parse(data) }
-        catch (e) { return console.error(e) }
-        _roles.forEach(function (role) {
-          debug('new client for role: %s', role);
-          if (!rolesAvailable[role]) rolesAvailable[role] = [];
-          rolesAvailable[role].push(mdm);
-          ee.emit(role, mdm);
-        });
-      });
-      return;
-    }
-
-    if (!roles[stream.meta]) {
-      debug('unknown role: %s', stream.meta);
-      stream.end();
-      return;
-    }
-
-    var str = start(stream.meta);
-    if (str.readable) str.pipe(stream);
-    if (str.writable) stream.pipe(str);
+  _ports.forEach(function(port) {
+    reconnect(function (con) {
+      debug('client connected to port %s', port);
+      con.pipe(ports.createStream(host)).pipe(con);
+    }).listen(port);
   });
-  con.on('end', function () {
-    if (_roles) {
-      _roles.forEach(function (name) {
-        rolesAvailable[name].splice(rolesAvailable[name].indexOf(mdm), 1);
-        if (!rolesAvailable[name].length) delete rolesAvailable[name];
-      });
-    }
-  });
-  con.pipe(mdm).pipe(con);
 }
 
 /**

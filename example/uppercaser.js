@@ -9,7 +9,7 @@ role('uppercaser', function () {
 
 role('main', function () {
   process.stdin.setEncoding('utf8');
-  role.subscribe('uppercaser', function (upper) {
+  role.get('uppercaser', function (upper) {
     process.stdin
       .pipe(upper)
       .pipe(process.stdout);
