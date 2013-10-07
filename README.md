@@ -1,6 +1,8 @@
 
 # role
 
+[![build status](https://secure.travis-ci.org/juliangruber/role.png)](http://travis-ci.org/juliangruber/role)
+
 Develop services as single processes, deploy them as multiple - from a single
 code base.
 
