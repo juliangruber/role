@@ -2,6 +2,7 @@ var net = require('net');
 var debug = require('debug')('role');
 var seaport = require('seaport');
 var reconnect = require('reconnect-net');
+var address = require('./lib/address');
 var pick = require('./lib/pick');
 
 var roles = {};
@@ -31,6 +32,7 @@ exports.get = function(name, fn) {
 
   ports.get(name, function(processes) {
     var ps = pick(processes);
+    debug('got: %s (%s:%s)', name, ps.host, ps.port);
     fn(net.connect(ps.port, ps.host));
   });
 };
@@ -62,12 +64,12 @@ if (process.env.LISTEN) {
 if (process.env.CONNECT) {
   process.env.CONNECT
     .split(',')
-    .map(Number)
-    .forEach(function(port) {
+    .map(address)
+    .forEach(function(hp) {
       reconnect(function (con) {
-        debug('connected to port %s', port);
+        debug('connected to %s:%s', hp.post, hp.port);
         con.pipe(ports.createStream()).pipe(con);
-      }).listen(port);
+      }).listen(hp.port, hp.host);
     });
 }
 
