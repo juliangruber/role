@@ -65,11 +65,11 @@ if (process.env.CONNECT) {
   process.env.CONNECT
     .split(',')
     .map(address)
-    .forEach(function(hp) {
+    .forEach(function(a) {
       reconnect(function (con) {
-        debug('connected to %s:%s', hp.post, hp.port);
+        debug('connected to %s:%s', a.post, a.port);
         con.pipe(ports.createStream()).pipe(con);
-      }).listen(hp.port, hp.host);
+      }).listen(a.port, a.host);
     });
 }
 
