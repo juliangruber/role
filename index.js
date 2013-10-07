@@ -54,14 +54,6 @@ if (process.env.LISTEN) {
   ports.listen(Number(process.env.LISTEN));
 }
 
-if (process.env.CONNECT) {
-  process.env.CONNECT
-  .split(',')
-  .forEach(function(addr) {
-    ports.connect(addr);
-  });
-}
-
 if (process.env.PEER) {
   process.env.PEER
   .split(',')

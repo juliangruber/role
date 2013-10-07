@@ -14,8 +14,7 @@ test('main connects', function(t) {
   });
   var main = spawn('node', [uppercaser], {
     env: extend(process.env, {
-      LISTEN: '8901',
-      PEER: '8900',
+      CONNECT: '8900',
       ROLE: 'main'
     })
   });
