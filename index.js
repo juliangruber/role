@@ -8,9 +8,25 @@ var roles = {};
 var active = process.env.ROLE
   ? process.env.ROLE.split(',')
   : [];
-var ports = process.env.LISTEN
-  ? seaport.createServer()
-  : seaport.connect(process.env.CONNECT);
+var ports;
+
+if (process.env.CONNECT) {
+  ports = seaport.connect(process.env.CONNECT);
+} else {
+  ports = seaport.createServer();
+
+  if (process.env.LISTEN) {
+    ports.listen(Number(process.env.LISTEN));
+
+    if (process.env.PEER) {
+      process.env.PEER
+      .split(',')
+      .forEach(function(addr) {
+        ports.peer(addr);
+      });
+    }
+  }
+}
 
 // validation
 process.nextTick(function () {
@@ -48,18 +64,6 @@ function start (name) {
       host: 'localhost'
     }));
   }
-}
-
-if (process.env.LISTEN) {
-  ports.listen(Number(process.env.LISTEN));
-}
-
-if (process.env.PEER) {
-  process.env.PEER
-  .split(',')
-  .forEach(function(addr) {
-    ports.peer(addr);
-  });
 }
 
 function execLocally (role) {
