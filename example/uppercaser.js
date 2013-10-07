@@ -1,13 +1,13 @@
 var role = require('..');
 var through = require('through');
 
-role('uppercaser', function () {
+role.set('uppercaser', function() {
   return through(function (chunk) {
     this.queue(chunk.toString().toUpperCase());
   });
 });
 
-role('main', function () {
+role.set('main', function() {
   process.stdin.setEncoding('utf8');
   role.get('uppercaser', function (upper) {
     process.stdin
@@ -15,3 +15,4 @@ role('main', function () {
       .pipe(process.stdout);
   });
 });
+

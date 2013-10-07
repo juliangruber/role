@@ -4,16 +4,15 @@ var multilevel = require('multilevel');
 var http = require('http');
 var qs = require('querystring');
 
-role('db', function () {
-  var db = level();
-  return function () {
-    return multilevel.server(db);
-  }
+var db;
+role.set('db', function() {
+  if (!db) db = level();
+  return multilevel.server(db);
 });
 
-role('main', function () {
+role.set('main', function() {
   var db = multilevel.client();
-  role.subscribe('db', function (s) {
+  role.get('db', function(s) {
     s.pipe(db.createRpcStream()).pipe(s);
   });
 
@@ -21,7 +20,7 @@ role('main', function () {
     ? Number(process.env.PORT)
     : 8000;
 
-  http.createServer(function (req, res) {
+  http.createServer(function(req, res) {
     var query = qs.parse(req.url.split('?').slice(1).join(''));
     if (query.get) {
       db.get(query.get, function (err, val) {
@@ -40,3 +39,4 @@ role('main', function () {
     console.log('~> localhost:%s', port);
   });
 });
+
