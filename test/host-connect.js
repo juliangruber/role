@@ -14,6 +14,7 @@ test('hostname in connection string', function(t) {
   });
   var main = spawn('node', [uppercaser], {
     env: extend(process.env, {
+      LISTEN: '8901',
       CONNECT: 'localhost:8900',
       ROLE: 'main'
     })

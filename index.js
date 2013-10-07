@@ -2,7 +2,6 @@ var net = require('net');
 var debug = require('debug')('role');
 var seaport = require('seaport');
 var reconnect = require('reconnect-net');
-var address = require('./lib/address');
 var pick = require('./lib/pick');
 
 var roles = {};
@@ -20,8 +19,8 @@ process.nextTick(function () {
 });
 
 exports.set = function(name, fn) {
-  if (!process.env.ROLE) active.push(name);
   debug('set: %s', name);
+  if (!process.env.ROLE) active.push(name);
   roles[name] = fn;
 
   if (execLocally(name)) start(name);
@@ -51,26 +50,15 @@ function start (name) {
 }
 
 if (process.env.LISTEN) {
-  var port = Number(process.env.LISTEN);
-
-  net.createServer(function (con) {
-    debug('new connection');
-    con.pipe(ports.createStream()).pipe(con);
-  }).listen(port, function () {
-    debug('listening on port %s', port);
-  });
+  ports.listen(Number(process.env.LISTEN));
 }
 
 if (process.env.CONNECT) {
   process.env.CONNECT
-    .split(',')
-    .map(address)
-    .forEach(function(a) {
-      reconnect(function (con) {
-        debug('connected to %s:%s', a.post, a.port);
-        con.pipe(ports.createStream()).pipe(con);
-      }).listen(a.port, a.host);
-    });
+  .split(',')
+  .forEach(function(addr) {
+    ports.peer(addr);
+  });
 }
 
 function execLocally (role) {
