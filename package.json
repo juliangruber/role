@@ -8,6 +8,9 @@
   },
   "homepage": "https://github.com/juliangruber/role",
   "main": "index.js",
+  "scripts": {
+    "test": "tap test/*.js"
+  },
   "dependencies": {
     "debug": "~0.7.2",
     "reconnect-net": "0.0.0",
@@ -16,7 +19,8 @@
   "devDependencies": {
     "multilevel": "~5.2.0",
     "level-test": "~1.4.0",
-    "through": "~2.3.4"
+    "through": "~2.3.4",
+    "tap": "~0.4.4"
   },
   "keywords": [
     "deployment",
