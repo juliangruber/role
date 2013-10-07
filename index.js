@@ -1,7 +1,6 @@
 var net = require('net');
 var debug = require('debug')('role');
 var seaport = require('seaport');
-var reconnect = require('reconnect-net');
 var pick = require('./lib/pick');
 
 var roles = {};
