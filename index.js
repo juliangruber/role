@@ -59,14 +59,15 @@ if (process.env.LISTEN) {
 }
 
 if (process.env.CONNECT) {
-  var _ports = process.env.CONNECT.split(',').map(Number);
-
-  _ports.forEach(function(port) {
-    reconnect(function (con) {
-      debug('connected to port %s', port);
-      con.pipe(ports.createStream()).pipe(con);
-    }).listen(port);
-  });
+  process.env.CONNECT
+    .split(',')
+    .map(Number)
+    .forEach(function(port) {
+      reconnect(function (con) {
+        debug('connected to port %s', port);
+        con.pipe(ports.createStream()).pipe(con);
+      }).listen(port);
+    });
 }
 
 function execLocally (role) {
