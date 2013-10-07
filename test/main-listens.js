@@ -9,7 +9,7 @@ test('main listens', function(t) {
   var upper = spawn('node', [uppercaser], {
     env: extend(process.env, {
       LISTEN: '8901',
-      CONNECT: '8900',
+      PEER: '8900',
       ROLE: 'uppercaser'
     })
   });

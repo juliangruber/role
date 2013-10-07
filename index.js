@@ -8,8 +8,9 @@ var roles = {};
 var active = process.env.ROLE
   ? process.env.ROLE.split(',')
   : [];
-var ports = seaport.createServer();
-var host = 'localhost';
+var ports = process.env.LISTEN
+  ? seaport.createServer()
+  : seaport.connect(process.env.CONNECT);
 
 // validation
 process.nextTick(function () {
@@ -44,7 +45,7 @@ function start (name) {
       con.pipe(roles[name]()).pipe(con);
     }).listen(ports.register({
       role: name,
-      host: host
+      host: 'localhost'
     }));
   }
 }
@@ -55,6 +56,14 @@ if (process.env.LISTEN) {
 
 if (process.env.CONNECT) {
   process.env.CONNECT
+  .split(',')
+  .forEach(function(addr) {
+    ports.connect(addr);
+  });
+}
+
+if (process.env.PEER) {
+  process.env.PEER
   .split(',')
   .forEach(function(addr) {
     ports.peer(addr);

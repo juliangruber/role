@@ -15,7 +15,7 @@ test('main connects', function(t) {
   var main = spawn('node', [uppercaser], {
     env: extend(process.env, {
       LISTEN: '8901',
-      CONNECT: '8900',
+      PEER: '8900',
       ROLE: 'main'
     })
   });
