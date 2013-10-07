@@ -18,11 +18,7 @@ if (process.env.CONNECT) {
     ports.listen(Number(process.env.LISTEN));
 
     if (process.env.PEER) {
-      process.env.PEER
-      .split(',')
-      .forEach(function(addr) {
-        ports.peer(addr);
-      });
+      process.env.PEER.split(',').forEach(ports.peer);
     }
   }
 }
