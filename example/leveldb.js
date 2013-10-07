@@ -12,7 +12,7 @@ role.set('db', function() {
 
 role.set('main', function() {
   var db = multilevel.client();
-  role.get('db', function(s) {
+  role.subscribe('db', function(s) {
     s.pipe(db.createRpcStream()).pipe(s);
   });
 

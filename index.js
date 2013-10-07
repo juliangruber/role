@@ -48,6 +48,19 @@ exports.get = function(name, fn) {
   });
 };
 
+exports.subscribe = function(name, fn) {
+  exports.get(name, function(con) {
+    fn(con);
+
+    con.on('end', onend);
+    con.on('error', onend);
+
+    function onend(err) {
+      exports.subscribe(name, fn);
+    }
+  });
+};
+
 function start (name) {
   if (name == 'main') {
     roles[name]();
