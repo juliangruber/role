@@ -2,6 +2,7 @@ var net = require('net');
 var debug = require('debug')('role');
 var seaport = require('seaport');
 var pick = require('./lib/pick');
+var noop = function(){};
 
 var roles = {};
 var active = process.env.ROLE
@@ -35,7 +36,9 @@ exports.set = function(name, fn) {
   if (!process.env.ROLE) active.push(name);
   roles[name] = fn;
 
-  if (execLocally(name)) start(name);
+  if (!active.length || active.indexOf(name) > -1) {
+    start(name);
+  }
 };
 
 exports.get = function(name, fn) {
@@ -50,14 +53,11 @@ exports.get = function(name, fn) {
 
 exports.subscribe = function(name, fn) {
   exports.get(name, function(con) {
-    fn(con);
-
+    var onend = exports.subscribe.bind(null, name, fn);
     con.on('end', onend);
     con.on('error', onend);
 
-    function onend(err) {
-      exports.subscribe(name, fn);
-    }
+    fn(con);
   });
 };
 
@@ -66,15 +66,12 @@ function start (name) {
     roles[name]();
   } else {
     net.createServer(function(con) {
+      con.on('error', noop);
       con.pipe(roles[name]()).pipe(con);
     }).listen(ports.register({
       role: name,
       host: 'localhost'
     }));
   }
-}
-
-function execLocally (role) {
-  return !active.length || active.indexOf(role) > -1;
 }
 
