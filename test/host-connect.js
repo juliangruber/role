@@ -3,7 +3,7 @@ var test = require('tap').test;
 var uppercaser = __dirname + '/../example/uppercaser.js';
 var extend = require('xtend');
 
-test('host connect', function(t) {
+test('hostname in connection string', function(t) {
   t.plan(1);
 
   var upper = spawn('node', [uppercaser], {
