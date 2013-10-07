@@ -2,6 +2,7 @@ var net = require('net');
 var debug = require('debug')('role');
 var seaport = require('seaport');
 var reconnect = require('reconnect-net');
+var pick = require('./lib/pick');
 
 var roles = {};
 var active = process.env.ROLE
@@ -72,9 +73,5 @@ if (process.env.CONNECT) {
 
 function execLocally (role) {
   return !active.length || active.indexOf(role) > -1;
-}
-
-function pick(arr) {
-  return arr[Math.floor(Math.random() * arr.length)]
 }
 
