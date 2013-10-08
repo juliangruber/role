@@ -1,28 +1,14 @@
 var net = require('net');
 var debug = require('debug')('role');
-var seaport = require('seaport');
 var pick = require('./lib/pick');
+var createSeaport = require('./lib/create-seaport');
 var noop = function(){};
 
 var roles = {};
 var active = process.env.ROLE
   ? process.env.ROLE.split(',')
   : [];
-var ports;
-
-if (process.env.CONNECT) {
-  ports = seaport.connect(process.env.CONNECT);
-} else {
-  ports = seaport.createServer();
-
-  if (process.env.LISTEN) {
-    ports.listen(Number(process.env.LISTEN));
-
-    if (process.env.PEER) {
-      process.env.PEER.split(',').forEach(ports.peer);
-    }
-  }
-}
+var ports = createSeaport();
 
 // validation
 process.nextTick(function () {
