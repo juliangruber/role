@@ -1,7 +1,7 @@
 
 # role
 
-[![build status](https://secure.travis-ci.org/juliangruber/role.png)](http://travis-ci.org/juliangruber/role)
+[![build status](https://secure.travis-ci.org/juliangruber/role.png)](http://travis-ci.org/juliangruber/role) [![Greenkeeper badge](https://badges.greenkeeper.io/juliangruber/role.svg)](https://greenkeeper.io/)
 
 Develop services as single processes, deploy them as multiple - from a single
 code base.
